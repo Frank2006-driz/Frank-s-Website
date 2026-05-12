@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('manage_categories') }}">Categories</a></li>
+            <li><a href="{{ url_for('manage_posts') }}">Posts</a></li>
+            <li><a href="{{ url_for('manage_users') }}">Users</a></li>
+            <li><a href="{{ url_for('analytics') }}" class="active">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-content">
+        <h1>Analytics & Statistics</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p class="stat-number">{{ stats.total_users }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Posts</h3>
+                <p class="stat-number">{{ stats.total_posts }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Views</h3>
+                <p class="stat-number">{{ stats.total_views }}</p>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <section class="analytics-section">
+                <h2>Top Posts by Views</h2>
+                {% if stats.top_posts %}
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Views</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in stats.top_posts %}
+                                <tr>
+                                    <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></td>
+                                    <td>{{ post.author.username }}</td>
+                                    <td><span class="badge badge-views">{{ post.views }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+
+            <section class="analytics-section">
+                <h2>Posts by Category</h2>
+                {% if stats.category_stats %}
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cat_name, count in stats.category_stats %}
+                                <tr>
+                                    <td>{{ cat_name }}</td>
+                                    <td><span class="badge">{{ count }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+        </div>
+
+        <section class="analytics-section full-width">
+            <h2>Recent Page Views</h2>
+            {% if recent_views %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Post</th>
+                            <th>Viewer</th>
+                            <th>IP Address</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for view in recent_views %}
+                            <tr>
+                                <td><a href="{{ url_for('view_post', post_id=view.post.id) }}">{{ view.post.title }}</a></td>
+                                <td>{% if view.viewer %}{{ view.viewer.username }}{% else %}<span class="text-muted">Anonymous</span>{% endif %}</td>
+                                <td><code>{{ view.ip_address }}</code></td>
+                                <td>{{ view.viewed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+<style>
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.analytics-section {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.analytics-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.badge-views {
+    background: #d4edda;
+    color: #155724;
+}
+
+code {
+    background: #f5f5f5;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+@media (max-width: 768px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

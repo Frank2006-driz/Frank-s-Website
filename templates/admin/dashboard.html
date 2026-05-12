@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - My Website{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}" class="active">Dashboard</a></li>
+            <li><a href="{{ url_for('manage_categories') }}">Categories</a></li>
+            <li><a href="{{ url_for('manage_posts') }}">Posts</a></li>
+            <li><a href="{{ url_for('manage_users') }}">Users</a></li>
+            <li><a href="{{ url_for('analytics') }}">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-content">
+        <h1>Admin Dashboard</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p class="stat-number">{{ stats.total_users }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Posts</h3>
+                <p class="stat-number">{{ stats.total_posts }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Categories</h3>
+                <p class="stat-number">{{ stats.total_categories }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Views</h3>
+                <p class="stat-number">{{ stats.total_views }}</p>
+            </div>
+        </div>
+
+        <div class="admin-grid">
+            <section class="admin-section">
+                <h2>Recent Posts</h2>
+                {% if recent_posts %}
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                                <th>Views</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in recent_posts %}
+                                <tr>
+                                    <td><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></td>
+                                    <td>{{ post.author.username }}</td>
+                                    <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ post.views }}</td>
+                                    <td>
+                                        <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn btn-sm">View</a>
+                                        <form method="POST" action="{{ url_for('admin_delete_post', post_id=post.id) }}" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Sure?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+
+            <section class="admin-section">
+                <h2>Recent Users</h2>
+                {% if recent_users %}
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Joined</th>
+                                <th>Role</th>
+                                <th>Posts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{% if user.is_admin %}<span class="badge badge-admin">Admin</span>{% else %}<span class="badge">User</span>{% endif %}</td>
+                                    <td>{{ user.posts|length }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-container {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-nav {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: fit-content;
+}
+
+.admin-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.admin-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.admin-nav a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.admin-nav a:hover, .admin-nav a.active {
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+.admin-content h1 {
+    margin-bottom: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+}
+
+.admin-grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.admin-section {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    background: #e7f3ff;
+    color: var(--primary-color);
+    font-size: 0.85rem;
+}
+
+.badge-admin {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-table {
+        font-size: 0.9rem;
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

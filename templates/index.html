@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My Website{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to My Website</h1>
+        <p>Share your thoughts and ideas with the world</p>
+        {% if not current_user.is_authenticated %}
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Sign In</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="posts-section">
+    <div class="section-header">
+        <h2>Latest Posts</h2>
+        {% if search_query %}
+            <p class="search-info">Results for: <strong>"{{ search_query }}"</strong></p>
+        {% endif %}
+    </div>
+
+    <div class="content-grid">
+        <aside class="sidebar">
+            <h3>Categories</h3>
+            <ul class="category-list">
+                <li><a href="{{ url_for('index') }}" class="{% if not category_id %}active{% endif %}">All Categories</a></li>
+                {% for cat in categories %}
+                    <li>
+                        <a href="{{ url_for('index', category=cat.id) }}" class="{% if category_id == cat.id %}active{% endif %}">
+                            {{ cat.name }}
+                            <span class="cat-count">({{ cat.posts|length }})</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <div class="posts-content">
+            {% if posts.items %}
+                <div class="posts-grid">
+                    {% for post in posts.items %}
+                        <article class="post-card">
+                            <h3><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></h3>
+                            <p class="post-meta">
+                                By <strong>{{ post.author.username }}</strong> • {{ post.created_at.strftime('%B %d, %Y') }}
+                            </p>
+                            {% if post.category %}
+                                <p class="post-category"><a href="{{ url_for('view_category', category_id=post.category.id) }}">📁 {{ post.category.name }}</a></p>
+                            {% endif %}
+                            <p class="post-excerpt">{{ post.content[:150] }}...</p>
+                            <p class="post-stats"><span class="views-badge">👁️ {{ post.views }} views</span></p>
+                            <a href="{{ url_for('view_post', post_id=post.id) }}" class="read-more">Read More →</a>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if posts.pages > 1 %}
+                    <div class="pagination">
+                        {% if posts.has_prev %}
+                            <a href="{{ url_for('index', page=posts.prev_num, search=search_query, category=category_id) }}" class="btn btn-secondary">← Previous</a>
+                        {% endif %}
+
+                        <span class="page-info">Page {{ posts.page }} of {{ posts.pages }}</span>
+
+                        {% if posts.has_next %}
+                            <a href="{{ url_for('index', page=posts.next_num, search=search_query, category=category_id) }}" class="btn btn-secondary">Next →</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    <p>No posts found. {% if search_query %}Try a different search term.{% else %}Be the first to share!{% endif %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.search-info {
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sidebar {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.sidebar h3 {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+}
+
+.category-list li {
+    margin-bottom: 0.5rem;
+}
+
+.category-list a {
+    display: block;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+.category-list a:hover, .category-list a.active {
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+.cat-count {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.post-category {
+    margin: 0.5rem 0;
+}
+
+.post-category a {
+    display: inline-block;
+    background: #e7f3ff;
+    color: var(--primary-color);
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.post-category a:hover {
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+.post-stats {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.views-badge {
+    background: #d4edda;
+    color: #155724;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

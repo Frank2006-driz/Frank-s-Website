@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('manage_categories') }}">Categories</a></li>
+            <li><a href="{{ url_for('manage_posts') }}">Posts</a></li>
+            <li><a href="{{ url_for('manage_users') }}" class="active">Users</a></li>
+            <li><a href="{{ url_for('analytics') }}">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-content">
+        <h1>Manage Users</h1>
+        
+        <div class="users-card">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Posts</th>
+                        <th>Joined</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.posts|length }}</td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if user.is_admin %}
+                                    <span class="badge badge-admin">Admin</span>
+                                {% else %}
+                                    <span class="badge">User</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.id != current_user.id %}
+                                    <form method="POST" action="{{ url_for('toggle_admin', user_id=user.id) }}" style="display:inline;">
+                                        <button type="submit" class="btn btn-secondary btn-sm">
+                                            {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">Current user</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if users.pages > 1 %}
+            <div class="pagination">
+                {% if users.has_prev %}
+                    <a href="{{ url_for('manage_users', page=users.prev_num) }}" class="btn btn-secondary">← Previous</a>
+                {% endif %}
+
+                <span class="page-info">Page {{ users.page }} of {{ users.pages }}</span>
+
+                {% if users.has_next %}
+                    <a href="{{ url_for('manage_users', page=users.next_num) }}" class="btn btn-secondary">Next →</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.users-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.text-muted {
+    color: var(--secondary-color);
+}
+</style>
+{% endblock %}

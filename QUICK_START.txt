@@ -1,0 +1,79 @@
+🚀 QUICK START GUIDE
+====================
+
+STEP 1: Install Python 3.8 or higher
+   Download from: https://www.python.org/
+
+STEP 2: Open Command Prompt in this folder
+   - Right-click in the folder and select "Open PowerShell here"
+   - Or: cd C:\Users\Jtubm\New project
+
+STEP 3: Create Virtual Environment
+   python -m venv venv
+
+STEP 4: Activate Virtual Environment
+   venv\Scripts\activate
+
+STEP 5: Install Dependencies
+   pip install -r requirements.txt
+
+STEP 6: Run Setup Script
+   python setup.py
+   
+   This will:
+   - Create database tables
+   - Create your admin account
+   - Initialize sample categories
+
+STEP 7: Run the Application
+   python app.py
+
+STEP 8: Open Browser
+   Go to: http://localhost:5000
+
+📝 WHAT YOU CAN DO:
+   ✅ Register and login
+   ✅ Create, edit, and delete posts
+   ✅ Organize posts into categories
+   ✅ Search for posts
+   ✅ View analytics (if admin)
+   ✅ Manage users and posts (if admin)
+   ✅ Track page views
+
+🔐 ADMIN ACCESS:
+   - The user you create in setup.py is an admin
+   - Click "Admin" in the navbar to access admin panel
+   - Manage categories, users, posts, and view analytics
+
+🔧 PROJECT STRUCTURE:
+   - app.py               → Main application
+   - setup.py             → Database initialization
+   - requirements.txt     → Dependencies
+   - templates/           → HTML pages (including admin)
+   - static/              → CSS and JavaScript
+   - config.py            → Configuration
+   - website.db           → Database (created automatically)
+
+💡 TIPS:
+   - Use category to organize posts
+   - Search bar searches titles and content
+   - Admin panel shows detailed analytics
+   - View counts tracked automatically
+   - Change SECRET_KEY in app.py for production
+
+🆘 ISSUES?
+   - Port 5000 in use? Change it in app.py (line 215)
+   - Delete website.db to reset database completely
+   - Run setup.py again if database is corrupted
+   - Make sure Python is installed: python --version
+
+🎁 NEW FEATURES:
+   - Search and Filter posts
+   - Categories system
+   - Admin panel with analytics
+   - Page view tracking
+   - User statistics
+   - Post statistics
+
+Happy Coding! 🎉
+

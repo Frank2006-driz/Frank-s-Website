@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - My Website{% endblock %}
+
+{% block content %}
+<article class="post-view">
+    <header class="post-header">
+        <h1>{{ post.title }}</h1>
+        {% if post.category %}
+            <p class="category-link"><a href="{{ url_for('view_category', category_id=post.category.id) }}">📁 {{ post.category.name }}</a></p>
+        {% endif %}
+        <p class="post-meta">
+            By <strong>{{ post.author.username }}</strong> • 
+            {{ post.created_at.strftime('%B %d, %Y') }}
+            {% if post.updated_at != post.created_at %}
+                • Updated {{ post.updated_at.strftime('%B %d, %Y') }}
+            {% endif %}
+            • <span class="views-count">👁️ {{ post.views }} views</span>
+        </p>
+    </header>
+
+    <div class="post-content">
+        {{ post.content }}
+    </div>
+
+    {% if current_user.is_authenticated and current_user.id == post.user_id %}
+        <div class="post-actions">
+            <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-secondary">Edit</a>
+            <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="post-footer">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Posts</a>
+    </div>
+</article>
+
+<style>
+.category-link {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-link a {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.category-link a:hover {
+    background: #0056b3;
+    text-decoration: none;
+}
+
+.views-count {
+    background: #e7f3ff;
+    color: var(--primary-color);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+}
+</style>
+{% endblock %}
